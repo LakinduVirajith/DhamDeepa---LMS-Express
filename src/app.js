@@ -48,8 +48,9 @@ app.use('/api/v1/prefects', prefectRoutes);
 app.use('/api/v1/competitions', competitionRoutes);
 
 // ❌ Unknown routes
-app.all('*', (req, res) => {
+app.use((req, res) => {
   res.status(404).json({
+    status: 'fail',
     message: `Can't find ${req.originalUrl}`,
   });
 });

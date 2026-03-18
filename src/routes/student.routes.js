@@ -6,7 +6,7 @@ import {
   updateStudent,
   deleteStudent,
 } from '../controllers/student.controller.js';
-import { requireAuth, requireRole } from '../middleware/auth.middleware.js';
+import { requireAuth, requireRole } from '../middlewares/auth.middleware.js';
 import { USER_ROLES } from '../enums/roles.enum.js';
 
 const router = express.Router();

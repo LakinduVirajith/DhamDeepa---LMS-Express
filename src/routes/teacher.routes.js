@@ -1,13 +1,12 @@
 import express from 'express';
 import {
   getAllTeachersController,
-  getTeachersBySubjectController,
   getTeacherByIdController,
   createTeacherController,
   updateTeacherController,
   deleteTeacherController,
 } from '../controllers/teacher.controller.js';
-import { requireAuth, requireRole } from '../middleware/auth.middleware.js';
+import { requireAuth, requireRole } from '../middlewares/auth.middleware.js';
 import { USER_ROLES } from '../enums/roles.enum.js';
 
 const router = express.Router();

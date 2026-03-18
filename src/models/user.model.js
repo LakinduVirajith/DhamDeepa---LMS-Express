@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { USER_ROLES } from '../enums/roles.enum.js';
+import { USER_STATUS } from '../enums/status.enum.js';
 
 const userSchema = new mongoose.Schema(
   {

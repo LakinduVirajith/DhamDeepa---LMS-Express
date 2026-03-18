@@ -1,5 +1,5 @@
 import express from 'express';
-import { requireAuth, requireRole } from '../middleware/auth.middleware.js';
+import { requireAuth, requireRole } from '../middlewares/auth.middleware.js';
 import {
   updateUserRoleController,
   updateUserStatusController,

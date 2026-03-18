@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { GENDER } from '../enums/gender.enum.js';
+import { SCHOOL_GRADES } from '../enums/grades.enum.js';
 
 const studentSchema = new mongoose.Schema(
   {

@@ -28,6 +28,11 @@ export const updateUserRole = async ({ clerkId, role }) => {
   return user;
 };
 
+/**
+ * Update a user's status both in DB and Clerk
+ * @param {String} clerkId - MongoDB _id of the user
+ * @param {String} status - new status ('ACTIVE' or 'INACTIVE')
+ */
 export const updateUserStatus = async ({ clerkId, status }) => {
   if (!Object.values(USER_STATUS).includes(status)) {
     throw new Error('Invalid status');

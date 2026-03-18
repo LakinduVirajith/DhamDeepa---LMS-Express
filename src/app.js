@@ -6,10 +6,11 @@ import 'dotenv/config';
 import connectDB from './config/db.js';
 
 // 🔐 Middlewares
-import { securityMiddleware } from './middlewares/security.middleware.js';
 import { apiLimiter } from './middlewares/rateLimit.middleware.js';
+import { securityMiddleware } from './middlewares/security.middleware.js';
 
 // 📦 Routes
+import healthRoutes from './routes/health.routes.js';
 import userWebhookRoutes from './routes/user.webhook.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import studentRoutes from './routes/student.routes.js';
@@ -35,9 +36,12 @@ app.use(express.json({ limit: '10kb' }));
 app.use(compression());
 
 // 🧾 Log requests (dev only)
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'dev') {
   app.use(morgan('dev'));
 }
+
+// ❤️‍🩹 Public health route
+app.use('/health', healthRoutes);
 
 // 🚏 Routes
 app.use('/api/v1/webhooks/users', userWebhookRoutes);

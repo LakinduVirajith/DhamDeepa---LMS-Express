@@ -25,6 +25,7 @@ export const createUser = async (clerkUser) => {
 
 /**
  * Update user in DB when Clerk sends update
+ * @param {Object} clerkUser - Clerk user object
  */
 export const updateUser = async (clerkUser) => {
   const user = await User.findOne({ clerkId: clerkUser.id });
@@ -40,6 +41,7 @@ export const updateUser = async (clerkUser) => {
 
 /**
  * Delete user in DB
+ * @param {Object} clerkUserId - Clerk user id
  */
 export const deleteUser = async (clerkId) => {
   const user = await User.findOne({ clerkId });

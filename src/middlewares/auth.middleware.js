@@ -1,7 +1,7 @@
 import { requireAuth as clerkRequireAuth } from '@clerk/express';
 import User from '../models/user.model.js';
 
-// Wrap Clerk auth and add DB user to request
+// 🔑 Wrap Clerk auth and add DB user to request
 export const requireAuth = [
   clerkRequireAuth(), // Clerk auth
   async (req, res, next) => {
@@ -18,7 +18,7 @@ export const requireAuth = [
   },
 ];
 
-// Role-based middleware
+// 👤 Role-based middleware
 export const requireRole = (roles = []) => {
   return (req, res, next) => {
     if (!req.user) return res.status(403).json({ message: 'Unauthorized' });

@@ -11,20 +11,28 @@ export const securityMiddleware = (app) => {
   // 🌐 Allow requests only from frontend
   app.use(
     cors({
-      origin: process.env.CLIENT_URL || '*',
+      origin: process.env.CLIENT_URL,
       credentials: true,
+      optionsSuccessStatus: 200,
     }),
   );
-
-  // 🧪 Prevent NoSQL injection (MongoDB)
-  app.use(mongoSanitize());
-
-  // 🧬 Prevent XSS (script injection)
-  app.use(xss());
 
   // 🔀 Prevent duplicate query params
   app.use(hpp());
 
   // 🚫 Hide Express info
   app.disable('x-powered-by');
+
+  // 🧪 Body sanitizers (apply only to routes that send data)
+  // Prevents MongoDB NoSQL injection and XSS attacks
+  app.use((req, res, next) => {
+    const method = req.method.toUpperCase();
+    if (['POST', 'PUT', 'PATCH'].includes(method)) {
+      mongoSanitize()(req, res, () => {
+        xss()(req, res, next);
+      });
+    } else {
+      next();
+    }
+  });
 };

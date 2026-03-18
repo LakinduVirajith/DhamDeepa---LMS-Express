@@ -1,6 +1,9 @@
 import { updateUserRole } from '../services/admin.service.js';
 
-// PUT /api/v1/admin/user/:clerkId/role
+/**
+ * PUT /api/v1/admin/user/:clerkId/role
+ * Update a user's role
+ */
 export const updateUserRoleController = async (req, res) => {
   try {
     const { clerkId } = req.params;
@@ -14,7 +17,10 @@ export const updateUserRoleController = async (req, res) => {
   }
 };
 
-// PUT /api/v1/admin/user/:clerkId/status
+/**
+ * PUT /api/v1/admin/user/:clerkId/status
+ * Update a user's status
+ */
 export const updateUserStatusController = async (req, res) => {
   try {
     const { clerkId } = req.params;

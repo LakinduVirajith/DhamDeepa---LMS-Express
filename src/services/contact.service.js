@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import 'dotenv/config';
 
 export const sendContactEmail = async ({ name, email, message }) => {
   const transporter = nodemailer.createTransport({
@@ -12,7 +13,8 @@ export const sendContactEmail = async ({ name, email, message }) => {
   });
 
   const mailOptions = {
-    from: `"${name}" <${email}>`,
+    from: `"DhamDeepa Contact" <${process.env.SMTP_USER}>`,
+    replyTo: email,
     to: process.env.CONTACT_EMAIL,
     subject: `New Contact Form Submission from ${name}`,
     text: message,

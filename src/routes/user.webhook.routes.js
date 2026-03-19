@@ -31,7 +31,7 @@ function verifyClerkSignature(rawBodyBuffer, signature, secret) {
 async function handleUserWebhook(req, res) {
   try {
     const secret = process.env.CLERK_WEBHOOK_SECRET;
-    const signature = req.headers['x-clerk-signature'];
+    const signature = req.headers['x-clerk-webhook-secret'];
 
     if (!verifyClerkSignature(req.body, signature, secret)) {
       return res.status(401).json({ message: 'Unauthorized' });

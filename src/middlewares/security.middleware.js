@@ -26,6 +26,10 @@ export const securityMiddleware = (app) => {
   // 🧪 Body sanitizers (apply only to routes that send data)
   // Prevents MongoDB NoSQL injection and XSS attacks
   app.use((req, res, next) => {
+    if (req.path.startsWith('/api/v1/webhooks')) {
+      return next();
+    }
+
     const method = req.method.toUpperCase();
     if (['POST', 'PUT', 'PATCH'].includes(method)) {
       mongoSanitize()(req, res, () => {

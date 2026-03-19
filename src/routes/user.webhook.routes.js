@@ -8,7 +8,11 @@ import {
 const router = express.Router();
 
 // Clerk webhook endpoint
-router.post('/clerk', handleUserWebhook);
+router.post(
+  '/clerk',
+  express.raw({ type: 'application/json' }),
+  handleUserWebhook,
+);
 
 export default router;
 

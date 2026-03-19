@@ -1,5 +1,5 @@
 import express from 'express';
-import { Webhook } from '@clerk/clerk-sdk-node';
+import { clerkClient } from '@clerk/clerk-sdk-node';
 import {
   handleUserCreated,
   handleUserUpdated,
@@ -8,7 +8,7 @@ import {
 
 const router = express.Router();
 
-// Use raw body to verify Clerk signature
+// Clerk webhook endpoint (raw body required)
 router.post(
   '/clerk',
   express.raw({ type: 'application/json' }),
@@ -21,10 +21,13 @@ async function handleUserWebhook(req, res) {
   try {
     const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
 
-    // Clerk verification
-    const event = Webhook.verify(req.body, req.headers, webhookSecret);
+    // Verify the webhook and parse event
+    const event = clerkClient.webhooks.verifyWebhook({
+      rawBody: req.body,
+      signature: req.headers['x-clerk-signature'],
+      secret: webhookSecret,
+    });
 
-    // event is already parsed JSON
     switch (event.type) {
       case 'user.created':
         await handleUserCreated(event.data);

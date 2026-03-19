@@ -1,5 +1,5 @@
 import express from 'express';
-import crypto from 'crypto';
+import { Webhook } from 'svix';
 import {
   handleUserCreated,
   handleUserUpdated,
@@ -8,47 +8,44 @@ import {
 
 const router = express.Router();
 
-// Clerk webhook endpoint
+// Clerk webhook endpoint (raw body REQUIRED)
 router.post(
   '/clerk',
   express.raw({ type: 'application/json' }),
   handleUserWebhook,
 );
-export default router;
 
-// Verify Clerk HMAC Signature
-function verifyClerkSignature(rawBodyBuffer, signature, secret) {
-  const hmac = crypto.createHmac('sha256', secret);
-  hmac.update(rawBodyBuffer);
-  const digest = hmac.digest('hex');
-  return crypto.timingSafeEqual(
-    Buffer.from(digest, 'hex'),
-    Buffer.from(signature, 'hex'),
-  );
-}
+export default router;
 
 // Webhook handler
 async function handleUserWebhook(req, res) {
   try {
     const secret = process.env.CLERK_WEBHOOK_SECRET;
-    const signature = req.headers['x-clerk-webhook-secret'];
 
-    if (!verifyClerkSignature(req.body, signature, secret)) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
+    // Initialize Svix webhook verifier
+    const wh = new Webhook(secret);
 
-    const event = JSON.parse(req.body.toString('utf8'));
+    // Verify + parse event
+    const event = wh.verify(req.body.toString(), {
+      'svix-id': req.headers['svix-id'],
+      'svix-timestamp': req.headers['svix-timestamp'],
+      'svix-signature': req.headers['svix-signature'],
+    });
 
+    // Handle events
     switch (event.type) {
       case 'user.created':
         await handleUserCreated(event.data);
         break;
+
       case 'user.updated':
         await handleUserUpdated(event.data);
         break;
+
       case 'user.deleted':
         await handleUserDeleted(event.data.id);
         break;
+
       default:
         console.log('Ignoring webhook type:', event.type);
         break;

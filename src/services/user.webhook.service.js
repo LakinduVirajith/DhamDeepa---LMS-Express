@@ -6,15 +6,20 @@ import { clerkClient } from '@clerk/clerk-sdk-node';
  * @param {Object} clerkUser - Clerk user object
  */
 export const createUser = async (clerkUser) => {
-  if (!clerkUser.primary_email_address) {
+  const email =
+    clerkUser.primary_email_address ||
+    clerkUser.emails?.find((e) => e.verified)?.email_address ||
+    null;
+
+  if (!email) {
     throw new Error('Cannot create user: email is missing');
   }
 
   const newUser = new User({
     clerkId: clerkUser.id,
-    firstName: clerkUser.first_name,
-    lastName: clerkUser.last_name,
-    email: clerkUser.primary_email_address,
+    firstName: clerkUser.first_name || '',
+    lastName: clerkUser.last_name || '',
+    email,
   });
 
   const user = await newUser.save();
@@ -35,11 +40,22 @@ export const updateUser = async (clerkUser) => {
   const user = await User.findOne({ clerkId: clerkUser.id });
   if (!user) return null;
 
+  const email =
+    clerkUser.primary_email_address ||
+    clerkUser.emails?.find((e) => e.verified)?.email_address ||
+    user.email;
+
   user.firstName = clerkUser.first_name ?? user.firstName;
   user.lastName = clerkUser.last_name ?? user.lastName;
-  user.email = clerkUser.primary_email_address ?? user.email;
+  user.email = email;
 
   await user.save();
+
+  // Sync metadata after update
+  await clerkClient.users.updateUser(clerkUser.id, {
+    publicMetadata: { role: user.role, status: user.status },
+  });
+
   return user;
 };
 
@@ -49,7 +65,7 @@ export const updateUser = async (clerkUser) => {
  */
 export const deleteUser = async (clerkId) => {
   const user = await User.findOne({ clerkId });
-  if (!user) return null;
+  if (!user) return false;
 
   await user.remove();
   return true;

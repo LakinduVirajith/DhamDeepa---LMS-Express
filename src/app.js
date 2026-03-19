@@ -17,6 +17,7 @@ import studentRoutes from './routes/student.routes.js';
 import teacherRoutes from './routes/teacher.routes.js';
 import prefectRoutes from './routes/prefect.routes.js';
 import competitionRoutes from './routes/competition.routes.js';
+import contactRoutes from './routes/contact.routes.js';
 
 const app = express();
 
@@ -53,6 +54,7 @@ app.use('/api/v1/students', studentRoutes);
 app.use('/api/v1/teachers', teacherRoutes);
 app.use('/api/v1/prefects', prefectRoutes);
 app.use('/api/v1/competitions', competitionRoutes);
+app.use('/api/contact', contactRoutes);
 
 // ❌ Unknown routes
 app.use((req, res) => {

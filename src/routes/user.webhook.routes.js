@@ -1,5 +1,5 @@
 import express from 'express';
-import { clerkClient } from '@clerk/clerk-sdk-node';
+import crypto from 'crypto';
 import {
   handleUserCreated,
   handleUserUpdated,
@@ -8,7 +8,7 @@ import {
 
 const router = express.Router();
 
-// Clerk webhook endpoint (raw body required)
+// Clerk webhook endpoint
 router.post(
   '/clerk',
   express.raw({ type: 'application/json' }),
@@ -17,16 +17,26 @@ router.post(
 
 export default router;
 
+// Verify Clerk HMAC Signature
+function verifyClerkSignature(rawBody, signature, secret) {
+  const hmac = crypto.createHmac('sha256', secret);
+  hmac.update(rawBody);
+  const digest = hmac.digest('hex');
+  return crypto.timingSafeEqual(Buffer.from(digest), Buffer.from(signature));
+}
+
+// Webhook handler
 async function handleUserWebhook(req, res) {
   try {
-    const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
+    const secret = process.env.CLERK_WEBHOOK_SECRET;
+    const signature = req.headers['x-clerk-signature'];
 
-    // Verify the webhook and parse event
-    const event = clerkClient.webhooks.verifyWebhook({
-      rawBody: req.body,
-      signature: req.headers['x-clerk-signature'],
-      secret: webhookSecret,
-    });
+    if (!verifyClerkSignature(req.body, signature, secret)) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    // Parse the raw JSON body
+    const event = JSON.parse(req.body.toString('utf8'));
 
     switch (event.type) {
       case 'user.created':
@@ -42,7 +52,6 @@ async function handleUserWebhook(req, res) {
         console.log('Ignoring webhook type:', event.type);
         break;
     }
-
     res.status(200).json({ ok: true });
   } catch (err) {
     console.error('Webhook error:', err);

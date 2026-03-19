@@ -30,6 +30,9 @@ connectDB();
 // 🛡️ Security setup
 securityMiddleware(app);
 
+// 🔗 Webhook route BEFORE body parser
+app.use('/api/v1/webhooks/users', userWebhookRoutes);
+
 // 🚦 Rate limit all API routes
 app.use('/api', apiLimiter);
 
@@ -48,7 +51,6 @@ if (process.env.NODE_ENV === 'dev') {
 app.use('/health', healthRoutes);
 
 // 🚏 Routes
-app.use('/api/v1/webhooks/users', userWebhookRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/students', studentRoutes);
 app.use('/api/v1/teachers', teacherRoutes);

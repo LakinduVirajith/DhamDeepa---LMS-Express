@@ -6,8 +6,14 @@ import { clerkClient } from '@clerk/clerk-sdk-node';
  * @param {Object} clerkUser - Clerk user object
  */
 export const createUser = async (clerkUser) => {
+  console.log(
+    '🟢 [WEBHOOK] user.created payload:',
+    JSON.stringify(clerkUser, null, 2),
+  );
+
   const email =
     clerkUser.primary_email_address ||
+    clerkUser.email_addresses?.find((e) => e.verified)?.email_address ||
     clerkUser.emails?.find((e) => e.verified)?.email_address ||
     null;
 

@@ -32,6 +32,8 @@ async function handleUserWebhook(req, res) {
       'svix-signature': req.headers['svix-signature'],
     });
 
+    console.log('🟢 [SVIX] Event received:', JSON.stringify(event, null, 2));
+
     // Handle events
     switch (event.type) {
       case 'user.created':

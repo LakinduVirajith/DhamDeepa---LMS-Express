@@ -1,4 +1,5 @@
 import express from 'express';
+import { Webhook } from '@clerk/clerk-sdk-node';
 import {
   handleUserCreated,
   handleUserUpdated,
@@ -7,7 +8,7 @@ import {
 
 const router = express.Router();
 
-// Clerk webhook endpoint
+// Use raw body to verify Clerk signature
 router.post(
   '/clerk',
   express.raw({ type: 'application/json' }),
@@ -16,17 +17,14 @@ router.post(
 
 export default router;
 
-// Main handler routing by event type
 async function handleUserWebhook(req, res) {
   try {
-    // Check the secret header
-    const secretHeader = req.headers['x-clerk-webhook-secret'];
-    if (secretHeader !== process.env.CLERK_WEBHOOK_SECRET) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
+    const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
 
-    const event = JSON.parse(req.body.toString('utf8'));
+    // Clerk verification
+    const event = Webhook.verify(req.body, req.headers, webhookSecret);
 
+    // event is already parsed JSON
     switch (event.type) {
       case 'user.created':
         await handleUserCreated(event.data);
@@ -35,16 +33,16 @@ async function handleUserWebhook(req, res) {
         await handleUserUpdated(event.data);
         break;
       case 'user.deleted':
-        await handleUserDeleted(event.data);
+        await handleUserDeleted(event.data.id);
         break;
       default:
-        // ignore other events
+        console.log('Ignoring webhook type:', event.type);
         break;
     }
 
     res.status(200).json({ ok: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: err.message });
+    console.error('Webhook error:', err);
+    res.status(400).json({ message: err.message });
   }
 }

@@ -25,7 +25,7 @@ async function handleUserWebhook(req, res) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const event = req.body;
+    const event = JSON.parse(req.body.toString('utf8'));
 
     switch (event.type) {
       case 'user.created':

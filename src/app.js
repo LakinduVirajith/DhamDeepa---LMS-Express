@@ -20,6 +20,9 @@ import competitionRoutes from './routes/competition.routes.js';
 
 const app = express();
 
+// 🌐 Trust proxy headers (needed on Render / Heroku / Vercel)
+app.set('trust proxy', 1);
+
 // 🔌 DB connect
 connectDB();
 

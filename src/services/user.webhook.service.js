@@ -6,6 +6,10 @@ import { clerkClient } from '@clerk/clerk-sdk-node';
  * @param {Object} clerkUser - Clerk user object
  */
 export const createUser = async (clerkUser) => {
+  if (!clerkUser.primary_email_address) {
+    throw new Error('Cannot create user: email is missing');
+  }
+
   const newUser = new User({
     clerkId: clerkUser.id,
     firstName: clerkUser.first_name,

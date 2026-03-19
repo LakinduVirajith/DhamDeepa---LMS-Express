@@ -6,19 +6,17 @@ import { clerkClient } from '@clerk/clerk-sdk-node';
  * @param {Object} clerkUser - Clerk user object
  */
 export const createUser = async (clerkUser) => {
-  console.log(
-    '🟢 [WEBHOOK] user.created payload:',
-    JSON.stringify(clerkUser, null, 2),
-  );
-
   const email =
-    clerkUser.primary_email_address ||
-    clerkUser.email_addresses?.find((e) => e.verified)?.email_address ||
-    clerkUser.emails?.find((e) => e.verified)?.email_address ||
+    clerkUser.primary_email_address || // normal email signup
+    clerkUser.email_addresses?.find(
+      (e) => e.verification?.status === 'verified',
+    )?.email_address || // OAuth signup
+    clerkUser.external_accounts?.find((e) => e.email_address_verified)
+      ?.email_address || // fallback
     null;
 
   if (!email) {
-    throw new Error('Cannot create user: email is missing');
+    throw new Error('User email not found');
   }
 
   const newUser = new User({
@@ -48,7 +46,11 @@ export const updateUser = async (clerkUser) => {
 
   const email =
     clerkUser.primary_email_address ||
-    clerkUser.emails?.find((e) => e.verified)?.email_address ||
+    clerkUser.email_addresses?.find(
+      (e) => e.verification?.status === 'verified',
+    )?.email_address ||
+    clerkUser.external_accounts?.find((e) => e.email_address_verified)
+      ?.email_address ||
     user.email;
 
   user.firstName = clerkUser.first_name ?? user.firstName;

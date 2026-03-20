@@ -21,23 +21,23 @@ import contactRoutes from './routes/contact.routes.js';
 
 const app = express();
 
-// 🌐 Trust proxy headers (needed on Render / Heroku / Vercel)
-app.set('trust proxy', 1);
-
 // 🔌 DB connect
 connectDB();
 
-// 🛡️ Security setup
-securityMiddleware(app);
+// 🌐 Trust proxy headers (needed on Render / Heroku / Vercel)
+app.set('trust proxy', 1);
 
 // 🔗 Webhook route BEFORE body parser
 app.use('/api/v1/webhooks/users', userWebhookRoutes);
 
-// 🚦 Rate limit all API routes
-app.use('/api', apiLimiter);
-
 // 📦 Body parser (limit size)
 app.use(express.json({ limit: '10kb' }));
+
+// 🛡️ Security setup
+securityMiddleware(app);
+
+// 🚦 Rate limit all API routes
+app.use('/api', apiLimiter);
 
 // ⚡ Compress responses
 app.use(compression());
@@ -56,7 +56,7 @@ app.use('/api/v1/students', studentRoutes);
 app.use('/api/v1/teachers', teacherRoutes);
 app.use('/api/v1/prefects', prefectRoutes);
 app.use('/api/v1/competitions', competitionRoutes);
-app.use('/api/contact', contactRoutes);
+app.use('/api/v1/contact', contactRoutes);
 
 // ❌ Unknown routes
 app.use((req, res) => {

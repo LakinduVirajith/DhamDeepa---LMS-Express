@@ -1,7 +1,7 @@
 import helmet from 'helmet';
 import cors from 'cors';
 import mongoSanitize from 'express-mongo-sanitize';
-import xss from 'xss-clean';
+import xss from 'xss';
 import hpp from 'hpp';
 
 export const securityMiddleware = (app) => {
@@ -17,26 +17,34 @@ export const securityMiddleware = (app) => {
     }),
   );
 
+  // 🚫 Skip sanitization for webhooks
+  app.use((req, res, next) => {
+    if (req.originalUrl.startsWith('/api/v1/webhooks')) {
+      return next();
+    }
+    next();
+  });
+
+  // 🧪 Mongo sanitize
+  app.use(
+    mongoSanitize({
+      replaceWith: '_',
+    }),
+  );
+
+  // 🧬 XSS protection
+  app.use((req, res, next) => {
+    if (req.body) {
+      req.body = JSON.parse(JSON.stringify(req.body), (key, value) =>
+        typeof value === 'string' ? xss(value) : value,
+      );
+    }
+    next();
+  });
+
   // 🔀 Prevent duplicate query params
   app.use(hpp());
 
   // 🚫 Hide Express info
   app.disable('x-powered-by');
-
-  // 🧪 Body sanitizers (apply only to routes that send data)
-  // Prevents MongoDB NoSQL injection and XSS attacks
-  app.use((req, res, next) => {
-    if (req.path.startsWith('/api/v1/webhooks')) {
-      return next();
-    }
-
-    const method = req.method.toUpperCase();
-    if (['POST', 'PUT', 'PATCH'].includes(method)) {
-      mongoSanitize()(req, res, () => {
-        xss()(req, res, next);
-      });
-    } else {
-      next();
-    }
-  });
 };

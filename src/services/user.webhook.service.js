@@ -6,6 +6,11 @@ import { clerkClient } from '@clerk/clerk-sdk-node';
  * @param {Object} clerkUser - Clerk user object
  */
 export const createUser = async (clerkUser) => {
+  console.log(
+    '🟢 [WEBHOOK] user.created payload:',
+    JSON.stringify(clerkUser, null, 2),
+  );
+
   const email =
     clerkUser.primary_email_address || // normal email signup
     clerkUser.email_addresses?.find(
@@ -56,12 +61,17 @@ export const updateUser = async (clerkUser) => {
   user.firstName = clerkUser.first_name ?? user.firstName;
   user.lastName = clerkUser.last_name ?? user.lastName;
   user.email = email;
+  user.role = clerkUser.public_metadata.role;
+  user.status = clerkUser.public_metadata.status;
 
   await user.save();
 
   // Sync metadata after update
   await clerkClient.users.updateUser(clerkUser.id, {
-    publicMetadata: { role: user.role, status: user.status },
+    publicMetadata: {
+      role: clerkUser.public_metadata.role,
+      status: clerkUser.public_metadata.status,
+    },
   });
 
   return user;

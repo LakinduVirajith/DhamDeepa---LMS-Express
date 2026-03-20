@@ -6,11 +6,6 @@ import { clerkClient } from '@clerk/clerk-sdk-node';
  * @param {Object} clerkUser - Clerk user object
  */
 export const createUser = async (clerkUser) => {
-  console.log(
-    '🟢 [WEBHOOK] user.created payload:',
-    JSON.stringify(clerkUser, null, 2),
-  );
-
   const email =
     clerkUser.primary_email_address || // normal email signup
     clerkUser.email_addresses?.find(
@@ -85,6 +80,6 @@ export const deleteUser = async (clerkId) => {
   const user = await User.findOne({ clerkId });
   if (!user) return false;
 
-  await user.remove();
+  await user.deleteOne();
   return true;
 };

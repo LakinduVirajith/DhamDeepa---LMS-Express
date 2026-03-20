@@ -17,27 +17,19 @@ export const securityMiddleware = (app) => {
     }),
   );
 
-  // 🚫 Skip sanitization for webhooks
-  app.use((req, res, next) => {
-    if (req.originalUrl.startsWith('/api/v1/webhooks')) {
-      return next();
-    }
-    next();
-  });
-
   // 🧪 Mongo sanitize
-  app.use(
-    mongoSanitize({
-      replaceWith: '_',
-    }),
-  );
+  app.use(mongoSanitize());
 
-  // 🧬 XSS protection
+  // 🧬 XSS sanitize
   app.use((req, res, next) => {
-    if (req.body) {
-      req.body = JSON.parse(JSON.stringify(req.body), (key, value) =>
-        typeof value === 'string' ? xss(value) : value,
-      );
+    if (!req.originalUrl.startsWith('/api/v1/webhooks') && req.body) {
+      const sanitize = (obj) => {
+        for (const key in obj) {
+          if (typeof obj[key] === 'string') obj[key] = xss(obj[key]);
+          else if (typeof obj[key] === 'object') sanitize(obj[key]);
+        }
+      };
+      sanitize(req.body);
     }
     next();
   });

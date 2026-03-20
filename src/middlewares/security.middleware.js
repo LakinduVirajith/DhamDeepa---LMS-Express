@@ -1,6 +1,5 @@
 import helmet from 'helmet';
 import cors from 'cors';
-import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss';
 import hpp from 'hpp';
 
@@ -18,7 +17,21 @@ export const securityMiddleware = (app) => {
   );
 
   // 🧪 Mongo sanitize
-  app.use(mongoSanitize());
+  app.use((req, res, next) => {
+    if (req.body) {
+      const sanitizeBody = (obj) => {
+        for (const key in obj) {
+          if (typeof obj[key] === 'string') {
+            obj[key] = obj[key].replace(/\$/g, '_').replace(/\./g, '_');
+          } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+            sanitizeBody(obj[key]);
+          }
+        }
+      };
+      sanitizeBody(req.body);
+    }
+    next();
+  });
 
   // 🧬 XSS sanitize
   app.use((req, res, next) => {

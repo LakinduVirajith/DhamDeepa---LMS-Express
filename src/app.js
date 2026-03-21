@@ -12,7 +12,7 @@ import { securityMiddleware } from './middlewares/security.middleware.js';
 // 📦 Routes
 import healthRoutes from './routes/health.routes.js';
 import userWebhookRoutes from './routes/user.webhook.routes.js';
-import adminRoutes from './routes/admin.routes.js';
+import userRoutes from './routes/user.routes.js';
 import studentRoutes from './routes/student.routes.js';
 import teacherRoutes from './routes/teacher.routes.js';
 import prefectRoutes from './routes/prefect.routes.js';
@@ -51,7 +51,7 @@ if (process.env.NODE_ENV === 'dev') {
 app.use('/health', healthRoutes);
 
 // 🚏 Routes
-app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/students', studentRoutes);
 app.use('/api/v1/teachers', teacherRoutes);
 app.use('/api/v1/prefects', prefectRoutes);

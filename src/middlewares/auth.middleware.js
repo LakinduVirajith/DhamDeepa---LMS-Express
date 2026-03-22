@@ -8,6 +8,9 @@ export const requireAuth = [
     try {
       console.log('--- requireAuth middleware ---');
 
+      console.log('req.auth:', req.auth);
+      console.log('req.user:', req.user);
+      console.log('req.auth.userId:', req.auth.userId);
       // Step 1: Check Clerk auth
       if (!req.auth || !req.auth.userId) {
         console.log('❌ req.auth missing or userId missing');

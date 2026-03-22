@@ -18,9 +18,6 @@ export const getAllUsersController = async (req, res) => {
 
     let { role, status, search } = req.query;
 
-    role = role || USER_ROLES.TEACHER;
-    status = status || USER_STATUS.INACTIVE;
-
     const users = await getAllUsers({
       page,
       limit,

@@ -15,12 +15,12 @@ router.use(requireAuth);
 
 router.get('/', requireRole([USER_ROLES.ADMIN]), getAllUsersController);
 router.put(
-  '/:clerkId/role',
+  '/:userId/role',
   requireRole([USER_ROLES.ADMIN]),
   updateUserRoleController,
 );
 router.put(
-  '/:clerkId/status',
+  '/:userId/status',
   requireRole([USER_ROLES.ADMIN]),
   updateUserStatusController,
 );

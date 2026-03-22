@@ -31,14 +31,8 @@ export const getAllUsers = async ({
   const skip = (page - 1) * limit;
   const filter = {};
 
-  if (role) {
-    filter.role = role;
-  }
-
-  if (status) {
-    filter.status = status;
-  }
-
+  if (role) filter.role = role;
+  if (status) filter.status = status;
   if (search) {
     filter.$or = [
       { firstName: { $regex: search, $options: 'i' } },
@@ -59,15 +53,15 @@ export const getAllUsers = async ({
 
 /**
  * Update a user's role both in DB and Clerk
- * @param {String} clerkId - MongoDB _id of the user
+ * @param {String} userId - MongoDB _id of the user
  * @param {String} role - new role ('TEACHER', 'STUDENT', 'ADMIN')
  */
-export const updateUserRole = async ({ clerkId, role }) => {
+export const updateUserRole = async ({ userId, role }) => {
   if (!Object.values(USER_ROLES).includes(role)) {
     throw new Error('Invalid role');
   }
 
-  const user = await User.findById(clerkId);
+  const user = await User.findById(userId);
   if (!user) throw new Error('User not found');
 
   user.role = role;
@@ -85,15 +79,15 @@ export const updateUserRole = async ({ clerkId, role }) => {
 
 /**
  * Update a user's status both in DB and Clerk
- * @param {String} clerkId - MongoDB _id of the user
+ * @param {String} userId - MongoDB _id of the user
  * @param {String} status - new status ('ACTIVE' or 'INACTIVE')
  */
-export const updateUserStatus = async ({ clerkId, status }) => {
+export const updateUserStatus = async ({ userId, status }) => {
   if (!Object.values(USER_STATUS).includes(status)) {
     throw new Error('Invalid status');
   }
 
-  const user = await User.findById(clerkId);
+  const user = await User.findById(userId);
   if (!user) throw new Error('User not found');
 
   user.status = status;

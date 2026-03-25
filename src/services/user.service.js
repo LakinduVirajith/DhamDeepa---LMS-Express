@@ -4,6 +4,18 @@ import User from '../models/user.model.js';
 import { clerkClient } from '@clerk/express';
 
 /**
+ * Get a user by ID
+ * @param {String} userId - user ID
+ *
+ * @returns {Object} User
+ */
+export const getUserById = async (userId) => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error('User not found');
+  return user;
+};
+
+/**
  * Get all users with pagination, filters, and search
  * @param {Number} options.page - page number (default 1)
  * @param {Number} options.limit - items per page (default 10)

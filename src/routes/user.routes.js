@@ -2,6 +2,7 @@ import express from 'express';
 import { requireAuth, requireRole } from '../middlewares/auth.middleware.js';
 import {
   getAllUsersController,
+  getUserByIdController,
   getUserStatsController,
   updateUserRoleController,
   updateUserStatusController,
@@ -14,13 +15,14 @@ const router = express.Router();
 router.use(requireAuth);
 
 router.get('/', requireRole([USER_ROLES.ADMIN]), getAllUsersController);
+router.get('/:userId', requireRole([USER_ROLES.ADMIN]), getUserByIdController);
 router.put(
-  '/:userId/role',
+  '/:clerkId/role',
   requireRole([USER_ROLES.ADMIN]),
   updateUserRoleController,
 );
 router.put(
-  '/:userId/status',
+  '/:clerkId/status',
   requireRole([USER_ROLES.ADMIN]),
   updateUserStatusController,
 );

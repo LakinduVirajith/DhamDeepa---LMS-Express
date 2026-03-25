@@ -1,14 +1,27 @@
-import { USER_ROLES } from '../enums/roles.enum.js';
-import { USER_STATUS } from '../enums/status.enum.js';
 import {
   getAllUsers,
+  getUserById,
   getUserStats,
   updateUserRole,
   updateUserStatus,
 } from '../services/user.service.js';
 
 /**
- * GET /api/v1/admin/users
+ * GET /api/v1/users/:userId
+ * Get a user by ID
+ */
+export const getUserByIdController = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await getUserById(userId);
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/**
+ * GET /api/v1/users
  * Get all users
  */
 export const getAllUsersController = async (req, res) => {
@@ -33,7 +46,7 @@ export const getAllUsersController = async (req, res) => {
 };
 
 /**
- * PUT /api/v1/admin/users/:clerkId/role
+ * PUT /api/v1/users/:clerkId/role
  * Update a user's role
  */
 export const updateUserRoleController = async (req, res) => {
@@ -50,7 +63,7 @@ export const updateUserRoleController = async (req, res) => {
 };
 
 /**
- * PUT /api/v1/admin/users/:clerkId/status
+ * PUT /api/v1/users/:clerkId/status
  * Update a user's status
  */
 export const updateUserStatusController = async (req, res) => {
@@ -67,7 +80,7 @@ export const updateUserStatusController = async (req, res) => {
 };
 
 /**
- * GET /api/v1/admin/stats
+ * GET /api/v1/stats
  * Get user stats
  */
 export const getUserStatsController = async (req, res) => {

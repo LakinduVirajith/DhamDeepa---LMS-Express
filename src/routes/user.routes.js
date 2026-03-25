@@ -15,17 +15,21 @@ const router = express.Router();
 router.use(requireAuth);
 
 router.get('/', requireRole([USER_ROLES.ADMIN]), getAllUsersController);
+router.get(
+  '/statistics',
+  requireRole([USER_ROLES.ADMIN]),
+  getUserStatsController,
+);
 router.get('/:userId', requireRole([USER_ROLES.ADMIN]), getUserByIdController);
 router.put(
-  '/:clerkId/role',
+  '/:userId/role',
   requireRole([USER_ROLES.ADMIN]),
   updateUserRoleController,
 );
 router.put(
-  '/:clerkId/status',
+  '/:userId/status',
   requireRole([USER_ROLES.ADMIN]),
   updateUserStatusController,
 );
-router.get('/stats', requireRole([USER_ROLES.ADMIN]), getUserStatsController);
 
 export default router;

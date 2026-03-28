@@ -99,13 +99,14 @@ const teacherProfileSchema = new mongoose.Schema(
       maxStudents: {
         type: Number,
         min: 1,
-        max: 50,
+        max: 100,
+        default: 40,
       },
 
       employmentType: {
         type: String,
         enum: Object.values(EMPLOYMENT_TYPE),
-        required: true,
+        default: EMPLOYMENT_TYPE.FULL_TIME,
       },
 
       salary: {
@@ -135,4 +136,4 @@ const teacherProfileSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-export default mongoose.model('TeacherProfile', teacherProfileSchema);
+export default mongoose.model('Teachers', teacherProfileSchema);

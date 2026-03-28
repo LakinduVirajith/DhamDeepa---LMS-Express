@@ -1,15 +1,20 @@
 import { EMPLOYMENT_TYPE } from '../enums/employment.enum.js';
 import { USER_ROLES } from '../enums/roles.enum.js';
+import { USER_STATUS } from '../enums/status.enum.js';
 import Teacher from '../models/teacher.model.js';
 
 /**
  * Create a teacher
  */
 export const createTeacher = async ({ user, teacherData }) => {
-  if (user.role !== USER_ROLES.ADMIN)
-    throw new Error('Only admins can create teachers');
+  if (user.status !== USER_STATUS.ACTIVE)
+    throw new Error('Inactive teachers cannot create teacher profiles');
 
-  const teacher = new Teacher(teacherData);
+  const teacher = new Teacher({
+    ...teacherData,
+    user: user._id,
+  });
+
   await teacher.save();
   return teacher;
 };

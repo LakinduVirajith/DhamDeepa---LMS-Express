@@ -28,7 +28,7 @@ export const createTeacherController = async (req, res) => {
  */
 export const getTeacherByIdController = async (req, res) => {
   try {
-    const teacher = await getTeacherById(req.params.id);
+    const teacher = await getTeacherById(req.params.teacherId);
     res.status(200).json({ success: true, teacher });
   } catch (err) {
     res.status(404).json({ success: false, message: err.message });
@@ -72,7 +72,7 @@ export const updateTeacherController = async (req, res) => {
   try {
     const teacher = await updateTeacher({
       user: req.user,
-      teacherId: req.params.id,
+      teacherId: req.params.teacherId,
       updateData: req.body,
     });
     res.status(200).json({ success: true, teacher });
@@ -87,7 +87,7 @@ export const updateTeacherController = async (req, res) => {
  */
 export const deleteTeacherController = async (req, res) => {
   try {
-    await deleteTeacher({ user: req.user, clerkId: req.params.id });
+    await deleteTeacher({ user: req.user, teacherId: req.params.teacherId });
     res
       .status(200)
       .json({ success: true, message: 'Teacher deleted successfully' });

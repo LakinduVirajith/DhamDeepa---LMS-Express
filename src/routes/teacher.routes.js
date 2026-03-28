@@ -14,10 +14,22 @@ const router = express.Router();
 // All routes require Clerk auth
 router.use(requireAuth);
 
-router.post('/', requireRole([USER_ROLES.ADMIN]), createTeacherController);
-router.get('/:id', getTeacherByIdController);
+router.post('/', requireRole([USER_ROLES.TEACHER]), createTeacherController);
+router.get(
+  '/:teacherId',
+  requireRole([USER_ROLES.ADMIN, USER_ROLES.TEACHER]),
+  getTeacherByIdController,
+);
 router.get('/', requireRole([USER_ROLES.ADMIN]), getAllTeachersController);
-router.put('/:id', requireRole([USER_ROLES.ADMIN]), updateTeacherController);
-router.delete('/:id', requireRole([USER_ROLES.ADMIN]), deleteTeacherController);
+router.put(
+  '/:teacherId',
+  requireRole([USER_ROLES.ADMIN, USER_ROLES.TEACHER]),
+  updateTeacherController,
+);
+router.delete(
+  '/:teacherId',
+  requireRole([USER_ROLES.ADMIN]),
+  deleteTeacherController,
+);
 
 export default router;

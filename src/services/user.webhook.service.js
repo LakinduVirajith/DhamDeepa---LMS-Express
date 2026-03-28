@@ -24,7 +24,7 @@ export const createUser = async (clerkUser) => {
     firstName: clerkUser.first_name,
     lastName: clerkUser.last_name,
     email,
-    imageUrl: clerkUser.image_url,
+    avatarUrl: clerkUser.image_url,
   });
 
   const user = await newUser.save();
@@ -34,7 +34,7 @@ export const createUser = async (clerkUser) => {
     publicMetadata: {
       role: user.role,
       status: user.status,
-      imageUrl: user.imageUrl,
+      avatarUrl: user.imageUrl,
     },
   });
 
@@ -63,7 +63,7 @@ export const updateUser = async (clerkUser) => {
   user.email = email;
   user.role = clerkUser.public_metadata.role;
   user.status = clerkUser.public_metadata.status;
-  user.imageUrl = clerkUser.image_url ?? user.imageUrl;
+  user.avatarUrl = clerkUser.image_url ?? user.imageUrl;
 
   await user.save();
 
@@ -72,7 +72,7 @@ export const updateUser = async (clerkUser) => {
     publicMetadata: {
       role: clerkUser.public_metadata.role,
       status: clerkUser.public_metadata.status,
-      imageUrl: user.imageUrl,
+      avatarUrl: user.imageUrl,
     },
   });
 

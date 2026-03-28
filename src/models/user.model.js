@@ -9,7 +9,6 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    imageUrl: { type: String, trim: true },
     firstName: { type: String, trim: true },
     lastName: { type: String, trim: true },
     email: { type: String, required: true, trim: true },
@@ -23,6 +22,7 @@ const userSchema = new mongoose.Schema(
       enum: Object.values(USER_STATUS),
       default: USER_STATUS.INACTIVE,
     },
+    avatarUrl: { type: String, trim: true },
   },
   { timestamps: true },
 );

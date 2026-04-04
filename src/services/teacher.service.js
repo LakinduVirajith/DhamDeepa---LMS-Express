@@ -1,7 +1,8 @@
+import _ from 'lodash';
 import { EMPLOYMENT_TYPE } from '../enums/employment.enum.js';
-import { USER_ROLES } from '../enums/roles.enum.js';
 import { USER_STATUS } from '../enums/status.enum.js';
 import Teacher from '../models/teacher.model.js';
+import User from '../models/user.model.js';
 
 /**
  * Create a teacher
@@ -127,7 +128,8 @@ export const updateTeacher = async ({ teacherId, updateData }) => {
   const teacher = await Teacher.findById(teacherId);
   if (!teacher) throw new Error('Teacher not found for update');
 
-  Object.assign(teacher, updateData);
+  _.merge(teacher, updateData);
+
   await teacher.save();
   return teacher;
 };

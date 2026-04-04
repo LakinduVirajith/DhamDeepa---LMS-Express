@@ -25,7 +25,19 @@ export const createTeacher = async ({ user, teacherData }) => {
 export const getTeacherById = async (teacherId) => {
   const teacher = await Teacher.findById(teacherId).populate(
     'user',
-    'firstName lastName email role status',
+    'firstName lastName email role status avatarUrl',
+  );
+  if (!teacher) throw new Error('Teacher not found');
+  return teacher;
+};
+
+/**
+ * Get teacher by Clerk ID with populated user info
+ */
+export const getTeacherByClerkId = async (clerkId) => {
+  const teacher = await Teacher.findOne({ 'user.clerkId': clerkId }).populate(
+    'user',
+    'firstName lastName email role status avatarUrl',
   );
   if (!teacher) throw new Error('Teacher not found');
   return teacher;
@@ -42,7 +54,6 @@ export const getTeacherById = async (teacherId) => {
  * @param {String} search - Search by first name, last name, or email
  */
 export const getAllTeachers = async ({
-  user,
   page = 1,
   limit = 10,
   status,
@@ -50,9 +61,6 @@ export const getAllTeachers = async ({
   subject,
   search,
 }) => {
-  if (user.role !== USER_ROLES.ADMIN)
-    throw new Error('Only admins can view all teachers');
-
   const skip = (page - 1) * limit;
 
   // Build filters
@@ -61,16 +69,22 @@ export const getAllTeachers = async ({
   if (employmentType) {
     if (!Object.values(EMPLOYMENT_TYPE).includes(employmentType)) {
       throw new Error(
-        `Invalid employmentType. Allowed values: ${Object.values(EMPLOYMENT_TYPE).join(', ')}`,
+        `Invalid employment type. Allowed values: ${Object.values(EMPLOYMENT_TYPE).join(', ')}`,
       );
     }
     filter['professionalInfo.employmentType'] = employmentType;
   }
-  if (subject) filter['professionalInfo.subjects'] = subject;
+  if (subject) {
+    filter['professionalInfo.subjects'] = {
+      $elemMatch: {
+        $regex: new RegExp(subject, 'i'),
+      },
+    };
+  }
 
   // Query DB
   let teachers = await Teacher.find(filter)
-    .populate('user', 'firstName lastName email role status')
+    .populate('user', 'firstName lastName email role status avatarUrl')
     .skip(skip)
     .limit(limit)
     .sort({ createdAt: -1 });
@@ -99,12 +113,9 @@ export const getAllTeachers = async ({
 /**
  * Update teacher details
  */
-export const updateTeacher = async ({ user, teacherId, updateData }) => {
-  if (user.role !== USER_ROLES.ADMIN)
-    throw new Error('Only admins can update teachers');
-
+export const updateTeacher = async ({ teacherId, updateData }) => {
   const teacher = await Teacher.findById(teacherId);
-  if (!teacher) throw new Error('Teacher not found');
+  if (!teacher) throw new Error('Teacher not found for update');
 
   Object.assign(teacher, updateData);
   await teacher.save();
@@ -114,12 +125,9 @@ export const updateTeacher = async ({ user, teacherId, updateData }) => {
 /**
  * Delete a teacher
  */
-export const deleteTeacher = async ({ user, teacherId }) => {
-  if (user.role !== USER_ROLES.ADMIN)
-    throw new Error('Only admins can delete teachers');
-
+export const deleteTeacher = async ({ teacherId }) => {
   const teacher = await Teacher.findById(teacherId);
-  if (!teacher) throw new Error('Teacher not found');
+  if (!teacher) throw new Error('Teacher not found for deletion');
 
   await teacher.remove();
 };

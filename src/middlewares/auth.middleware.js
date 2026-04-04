@@ -7,6 +7,8 @@ export const requireAuth = [
   async (req, res, next) => {
     try {
       const user = await User.findOne({ clerkId: req.auth().userId });
+      console.log(`user: ${JSON.stringify(user)}`);
+
       if (!user) return res.status(403).json({ message: 'Unauthorized' });
 
       req.user = user; // attach user to request

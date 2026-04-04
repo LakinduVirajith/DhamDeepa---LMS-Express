@@ -4,6 +4,7 @@ import {
   createTeacher,
   updateTeacher,
   deleteTeacher,
+  getTeacherByClerkId,
 } from '../services/teacher.service.js';
 
 /**
@@ -16,9 +17,9 @@ export const createTeacherController = async (req, res) => {
       user: req.user,
       teacherData: req.body,
     });
-    res.status(201).json({ success: true, teacher });
+    res.status(201).json(teacher);
   } catch (err) {
-    res.status(403).json({ success: false, message: err.message });
+    res.status(403).json({ message: err.message });
   }
 };
 
@@ -29,9 +30,22 @@ export const createTeacherController = async (req, res) => {
 export const getTeacherByIdController = async (req, res) => {
   try {
     const teacher = await getTeacherById(req.params.teacherId);
-    res.status(200).json({ success: true, teacher });
+    res.status(200).json(teacher);
   } catch (err) {
-    res.status(404).json({ success: false, message: err.message });
+    res.status(404).json({ message: err.message });
+  }
+};
+
+/**
+ * GET /api/v1/teachers/clerk/:clerkId
+ * Get a teacher by Clerk ID
+ */
+export const getTeacherByClerkIdController = async (req, res) => {
+  try {
+    const teacher = await getTeacherByClerkId(req.params.clerkId);
+    res.status(200).json(teacher);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
   }
 };
 
@@ -47,8 +61,7 @@ export const getAllTeachersController = async (req, res) => {
 
     const { status, employmentType, subject, search } = req.query;
 
-    const result = await getAllTeachers({
-      user: req.user,
+    const teachers = await getAllTeachers({
       page,
       limit,
       status,
@@ -57,10 +70,10 @@ export const getAllTeachersController = async (req, res) => {
       search,
     });
 
-    res.status(200).json({ success: true, ...result });
+    res.status(200).json(teachers);
   } catch (err) {
     console.error(err);
-    res.status(403).json({ success: false, message: err.message });
+    res.status(403).json({ message: err.message });
   }
 };
 
@@ -71,13 +84,12 @@ export const getAllTeachersController = async (req, res) => {
 export const updateTeacherController = async (req, res) => {
   try {
     const teacher = await updateTeacher({
-      user: req.user,
       teacherId: req.params.teacherId,
       updateData: req.body,
     });
-    res.status(200).json({ success: true, teacher });
+    res.status(200).json(teacher);
   } catch (err) {
-    res.status(403).json({ success: false, message: err.message });
+    res.status(403).json({ message: err.message });
   }
 };
 
@@ -87,11 +99,9 @@ export const updateTeacherController = async (req, res) => {
  */
 export const deleteTeacherController = async (req, res) => {
   try {
-    await deleteTeacher({ user: req.user, teacherId: req.params.teacherId });
-    res
-      .status(200)
-      .json({ success: true, message: 'Teacher deleted successfully' });
+    await deleteTeacher({ teacherId: req.params.teacherId });
+    res.status(200).json({ message: 'Teacher deleted successfully' });
   } catch (err) {
-    res.status(403).json({ success: false, message: err.message });
+    res.status(403).json({ message: err.message });
   }
 };

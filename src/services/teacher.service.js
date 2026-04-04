@@ -35,11 +35,21 @@ export const getTeacherById = async (teacherId) => {
  * Get teacher by Clerk ID with populated user info
  */
 export const getTeacherByClerkId = async (clerkId) => {
-  const teacher = await Teacher.findOne({ 'user.clerkId': clerkId }).populate(
+  const user = await User.findOne({ clerkId });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const teacher = await Teacher.findOne({ user: user._id }).populate(
     'user',
     'firstName lastName email role status avatarUrl',
   );
-  if (!teacher) throw new Error('Teacher not found');
+
+  if (!teacher) {
+    throw new Error('Teacher not found');
+  }
+
   return teacher;
 };
 

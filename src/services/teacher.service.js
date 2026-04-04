@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { EMPLOYMENT_TYPE } from '../enums/employment.enum.js';
 import { USER_STATUS } from '../enums/status.enum.js';
 import Teacher from '../models/teacher.model.js';
@@ -128,7 +127,22 @@ export const updateTeacher = async ({ teacherId, updateData }) => {
   const teacher = await Teacher.findById(teacherId);
   if (!teacher) throw new Error('Teacher not found for update');
 
-  _.merge(teacher, updateData);
+  const merge = (target, source) => {
+    for (const key in source) {
+      if (
+        source[key] &&
+        typeof source[key] === 'object' &&
+        !Array.isArray(source[key])
+      ) {
+        if (!target[key]) target[key] = {};
+        merge(target[key], source[key]);
+      } else {
+        target[key] = source[key];
+      }
+    }
+  };
+
+  merge(teacher, updateData);
 
   await teacher.save();
   return teacher;

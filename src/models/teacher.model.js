@@ -110,8 +110,11 @@ const teacherProfileSchema = new mongoose.Schema(
       },
 
       salary: {
-        type: Number,
-        min: 0,
+        amount: { type: Number, min: 0 },
+        currency: {
+          type: String,
+          default: 'LKR',
+        },
       },
 
       joinedDate: {

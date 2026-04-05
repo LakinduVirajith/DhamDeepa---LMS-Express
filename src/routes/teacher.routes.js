@@ -17,16 +17,16 @@ router.use(requireAuth);
 
 router.post('/', requireRole([USER_ROLES.TEACHER]), createTeacherController);
 router.get(
-  '/:teacherId',
-  requireRole([USER_ROLES.ADMIN]),
-  getTeacherByIdController,
-);
-router.get(
   '/clerk/:clerkId',
   requireRole([USER_ROLES.TEACHER]),
   getTeacherByClerkIdController,
 );
 router.get('/', requireRole([USER_ROLES.ADMIN]), getAllTeachersController);
+router.get(
+  '/:teacherId',
+  requireRole([USER_ROLES.ADMIN]),
+  getTeacherByIdController,
+);
 router.patch(
   '/:teacherId',
   requireRole([USER_ROLES.ADMIN, USER_ROLES.TEACHER]),

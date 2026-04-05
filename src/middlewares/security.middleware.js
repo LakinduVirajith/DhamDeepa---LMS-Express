@@ -18,18 +18,24 @@ export const securityMiddleware = (app) => {
 
   // 🧪 Mongo sanitize
   app.use((req, res, next) => {
-    if (req.body) {
-      const sanitizeBody = (obj) => {
-        for (const key in obj) {
-          if (typeof obj[key] === 'string') {
-            obj[key] = obj[key].replace(/\$/g, '_').replace(/\./g, '_');
-          } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-            sanitizeBody(obj[key]);
-          }
+    const sanitize = (obj) => {
+      if (!obj || typeof obj !== 'object') return;
+
+      for (const key in obj) {
+        const safeKey = key.replace(/\$/g, '_').replace(/\./g, '_');
+
+        if (safeKey !== key) {
+          obj[safeKey] = obj[key];
+          delete obj[key];
         }
-      };
-      sanitizeBody(req.body);
-    }
+
+        if (typeof obj[safeKey] === 'object') {
+          sanitize(obj[safeKey]);
+        }
+      }
+    };
+
+    sanitize(req.body);
     next();
   });
 

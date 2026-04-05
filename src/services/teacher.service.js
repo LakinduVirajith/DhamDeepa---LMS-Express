@@ -20,18 +20,6 @@ export const createTeacher = async ({ user, teacherData }) => {
 };
 
 /**
- * Get teacher by ID with populated user info
- */
-export const getTeacherById = async (teacherId) => {
-  const teacher = await Teacher.findById(teacherId).populate(
-    'user',
-    'firstName lastName email role status avatarUrl',
-  );
-  if (!teacher) throw new Error('Teacher not found');
-  return teacher;
-};
-
-/**
  * Get teacher by Clerk ID with populated user info
  */
 export const getTeacherByClerkId = async (clerkId) => {
@@ -118,6 +106,18 @@ export const getAllTeachers = async ({
   const total = await Teacher.countDocuments(filter);
 
   return { teachers, total, page, pages: Math.ceil(total / limit) };
+};
+
+/**
+ * Get teacher by ID with populated user info
+ */
+export const getTeacherById = async (teacherId) => {
+  const teacher = await Teacher.findById(teacherId).populate(
+    'user',
+    'firstName lastName email role status avatarUrl',
+  );
+  if (!teacher) throw new Error('Teacher not found');
+  return teacher;
 };
 
 /**

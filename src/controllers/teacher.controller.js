@@ -12,6 +12,7 @@ import {
  * Create a new teacher (ADMIN only)
  */
 export const createTeacherController = async (req, res) => {
+  console.log('Creating teacher with data:', req.body);
   try {
     const teacher = await createTeacher({
       user: req.user,
@@ -19,20 +20,8 @@ export const createTeacherController = async (req, res) => {
     });
     res.status(201).json(teacher);
   } catch (err) {
+    console.error('Error creating teacher:', err);
     res.status(403).json({ message: err.message });
-  }
-};
-
-/**
- * GET /api/v1/teachers/:id
- * Get a teacher by ID
- */
-export const getTeacherByIdController = async (req, res) => {
-  try {
-    const teacher = await getTeacherById(req.params.teacherId);
-    res.status(200).json(teacher);
-  } catch (err) {
-    res.status(404).json({ message: err.message });
   }
 };
 
@@ -74,6 +63,19 @@ export const getAllTeachersController = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(403).json({ message: err.message });
+  }
+};
+
+/**
+ * GET /api/v1/teachers/:id
+ * Get a teacher by ID
+ */
+export const getTeacherByIdController = async (req, res) => {
+  try {
+    const teacher = await getTeacherById(req.params.teacherId);
+    res.status(200).json(teacher);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
   }
 };
 
